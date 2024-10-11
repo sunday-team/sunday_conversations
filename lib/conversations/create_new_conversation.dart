@@ -1,1 +1,3 @@
-void asyncCreateNewConversation() {}
+/// Create a new conversation
+void asyncCreateNewConversation() {
+}

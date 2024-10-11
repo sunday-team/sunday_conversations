@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'conversations/create_new_conversation.dart';
 import 'conversations/create_new_group_conversation.dart';
 import 'conversations/delete_conversation.dart';
+import 'conversations/edit_conversation.dart';
 import 'conversations/stream_conversation.dart';
 import 'messages/add_new_message.dart';
 import 'messages/delete_messages.dart';
@@ -50,5 +51,9 @@ class SundayConversations {
 
   void streamConversation() {
     asyncStreamConversation();
+  }
+
+  void editConversation() {
+    asyncEditConversation();
   }
 }
