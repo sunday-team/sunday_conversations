@@ -25,3 +25,7 @@
 * Add create new message function.
 
 * Add delete message function.
+
+## 0.1.1
+
+* Documented all functions.
