@@ -1,5 +1,7 @@
 library sunday_conversations;
 
+import 'dart:async';
+
 import 'package:get_storage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 import 'conversations/create_new_conversation.dart';
@@ -31,7 +33,11 @@ class SundayConversations {
     required String description,
     required String groupName,
   }) {
-    asyncCreateNewConversation(conversationName: conversationName, userId: userId, description: description, groupName: groupName);
+    asyncCreateNewConversation(
+        conversationName: conversationName,
+        userId: userId,
+        description: description,
+        groupName: groupName);
   }
 
   void createNewGroupConversation({
@@ -41,30 +47,70 @@ class SundayConversations {
     required String groupName,
     required List<Map<String, String>> users,
   }) {
-    asyncCreateNewGroupConversation(conversationName: conversationName, userId: userId, description: description, groupName: groupName, users: users);
+    asyncCreateNewGroupConversation(
+        conversationName: conversationName,
+        userId: userId,
+        description: description,
+        groupName: groupName,
+        users: users);
   }
 
-  void addNewMessage() {
-    asyncAddNewMessage();
+  void addNewMessage({
+    required String conversationUUID,
+    required String content,
+  }) {
+    asyncAddNewMessage(
+        conversationUUID: conversationUUID,
+        content: content,
+        isSender: false,
+        reaction: []);
   }
 
-  void deleteMessage() {
-    asyncDeleteMessage();
+  void deleteMessage({
+    required String conversationUUID,
+    required String messageId,
+  }) {
+    asyncDeleteMessage(
+        conversationUUID: conversationUUID, messageId: messageId);
   }
 
-  void editMessage() {
-    asyncEditMessage();
+  void editMessage({
+    required String conversationUUID,
+    required String messageId,
+    required String key,
+    required dynamic value,
+  }) {
+    asyncEditMessage(
+        conversationUUID: conversationUUID,
+        messageId: messageId,
+        key: key,
+        value: value);
   }
 
   void deleteConversation({required String conversationUUID}) {
     asyncDeleteConversation(conversationUUID: conversationUUID);
   }
 
-  void streamConversation() {
-    asyncStreamConversation();
+  Stream<dynamic> streamConversation({required String conversationUUID}) {
+    return asyncStreamConversation(conversationUUID).map((message) {
+      sundayPrint('Received message: $message');
+      return message;
+    }).handleError((error) {
+      sundayPrint('Error occurred: $error');
+    }).transform(StreamTransformer.fromHandlers(handleDone: (sink) {
+      sundayPrint('Stream closed');
+      sink.close();
+    }));
   }
 
-  void editConversation() {
-    asyncEditConversation();
+  void editConversation({
+    required String conversationUUID,
+    required String property,
+    required dynamic newValue,
+  }) {
+    asyncEditConversation(
+        conversationUUID: conversationUUID,
+        property: property,
+        newValue: newValue);
   }
 }

@@ -13,3 +13,15 @@
 * Add delete conversation function.
 
 * Improved error handling and clarity.
+
+## 0.1.0
+
+* Add edit conversation function.
+
+* Add stream conversation function.
+
+* Edited message schemas.
+
+* Add create new message function.
+
+* Add delete message function.

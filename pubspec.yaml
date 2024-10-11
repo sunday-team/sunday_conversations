@@ -1,6 +1,6 @@
 name: sunday_conversations
 description: "Sunday Conversations for Flutter"
-version: 0.0.2
+version: 0.1.0
 homepage: https://github.com/sunday-team/sunday_conversations
 
 environment:
@@ -11,10 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
   get_storage: ^2.1.1
-  sunday_core: ^0.0.2
+  sunday_core: ^0.0.3
   uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0

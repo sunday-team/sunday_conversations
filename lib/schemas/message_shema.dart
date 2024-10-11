@@ -7,6 +7,7 @@ Map<String, dynamic> messageSchema({
   required List<Map<String, dynamic>> reaction,
   required bool distributed,
   required bool seen,
+  List<Map<String, String>>? attachments, // List of attachments
 }) {
   return {
     "content": {
@@ -18,7 +19,8 @@ Map<String, dynamic> messageSchema({
     'timestamp': DateTime.now().toString(),
     'reaction': reaction,
     "distributed": distributed,
-    "seen": seen
+    "seen": seen,
+    "attachments": attachments ?? [], // Add attachments to the message
   };
 }
 
