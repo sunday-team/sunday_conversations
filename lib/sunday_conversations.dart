@@ -1,7 +1,7 @@
 library sunday_conversations;
 
 import 'package:get_storage/get_storage.dart';
-
+import 'package:sunday_core/Print/print.dart';
 import 'conversations/create_new_conversation.dart';
 import 'conversations/create_new_group_conversation.dart';
 import 'conversations/delete_conversation.dart';
@@ -22,15 +22,26 @@ class SundayConversations {
   /// intialize Sunday Conversations
   void init() {
     GetStorage.init();
-    print('Sunday Conversations initialized');
+    sundayPrint('Sunday Conversations initialized');
   }
 
-  void createNewConversation() {
-    asyncCreateNewConversation();
+  void createNewConversation({
+    required String conversationName,
+    required String userId,
+    required String description,
+    required String groupName,
+  }) {
+    asyncCreateNewConversation(conversationName: conversationName, userId: userId, description: description, groupName: groupName);
   }
 
-  void createNewGroupConversation() {
-    asyncCreateNewGroupConversation();
+  void createNewGroupConversation({
+    required String conversationName,
+    required String userId,
+    required String description,
+    required String groupName,
+    required List<Map<String, String>> users,
+  }) {
+    asyncCreateNewGroupConversation(conversationName: conversationName, userId: userId, description: description, groupName: groupName, users: users);
   }
 
   void addNewMessage() {
@@ -45,8 +56,8 @@ class SundayConversations {
     asyncEditMessage();
   }
 
-  void deleteConversation() {
-    asyncDeleteConversation();
+  void deleteConversation({required String conversationUUID}) {
+    asyncDeleteConversation(conversationUUID: conversationUUID);
   }
 
   void streamConversation() {
