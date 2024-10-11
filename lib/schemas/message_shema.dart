@@ -1,5 +1,19 @@
 import 'package:uuid/uuid.dart';
 
+/// Represents the schema for a message in the conversation.
+///
+/// This function creates a standardized structure for messages,
+/// including content, metadata, and optional attachments.
+///
+/// [content] The main text content of the message.
+/// [autoMessageId] A unique identifier for automatic messages.
+/// [isSender] Indicates whether the current user is the sender of this message.
+/// [reaction] A list of reactions to this message.
+/// [distributed] Indicates whether the message has been distributed.
+/// [seen] Indicates whether the message has been seen by the recipient.
+/// [attachments] Optional list of attachments associated with the message.
+///
+/// Returns a [Map<String, dynamic>] representing the message structure.
 Map<String, dynamic> messageSchema({
   required String content,
   required String autoMessageId,
@@ -7,7 +21,7 @@ Map<String, dynamic> messageSchema({
   required List<Map<String, dynamic>> reaction,
   required bool distributed,
   required bool seen,
-  List<Map<String, String>>? attachments, // List of attachments
+  List<Map<String, String>>? attachments,
 }) {
   return {
     "content": {
@@ -20,8 +34,8 @@ Map<String, dynamic> messageSchema({
     'reaction': reaction,
     "distributed": distributed,
     "seen": seen,
-    "attachments": attachments ?? [], // Add attachments to the message
+    "attachments": attachments ?? [],
   };
 }
 
-// for conversation start, use "automessageid:conversation-start".
+/// Note: For conversation start, use "automessageid:conversation-start".

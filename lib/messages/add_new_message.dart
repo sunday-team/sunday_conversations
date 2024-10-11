@@ -2,19 +2,31 @@ import 'package:sunday_conversations/schemas/message_shema.dart';
 import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 
-/// Add a new message to a conversation
+/// Adds a new message to a conversation.
+///
+/// This function creates a new message using the provided parameters and adds it
+/// to the specified conversation in storage.
+///
+/// Parameters:
+/// - [conversationUUID]: The unique identifier for the conversation.
+/// - [content]: The text content of the message.
+/// - [isSender]: A boolean indicating whether the current user is the sender.
+/// - [reaction]: A list of reactions associated with the message.
+/// - [attachments]: An optional list of attachments for the message.
+///
+/// Throws an [Exception] if there's an error adding the new message.
 Future<void> asyncAddNewMessage({
   required String conversationUUID,
   required String content,
   required bool isSender,
   required List<Map<String, dynamic>> reaction,
-  List<Map<String, String>>? attachments, // List of attachments
+  List<Map<String, String>>? attachments,
 }) async {
   try {
-    // Initialize GetStorage
+    /// Initialize GetStorage for data persistence
     final box = SundayGetStorage();
 
-    // Create a new message using the message schema
+    /// Create a new message using the message schema
     var newMessage = messageSchema(
       content: content,
       autoMessageId: "automessageid:new-message",
@@ -22,23 +34,26 @@ Future<void> asyncAddNewMessage({
       reaction: reaction,
       distributed: true,
       seen: false,
-      attachments: attachments, // Include attachments in the schema
+      attachments: attachments,
     );
 
-    // Get the existing messages for the conversation
-    var messages = await box.read("sunday-message-conversation-$conversationUUID") ?? [];
+    /// Retrieve existing messages for the conversation
+    var messages =
+        await box.read("sunday-message-conversation-$conversationUUID") ?? [];
 
-    // Ensure each item in the list is a Map<String, dynamic>
+    /// Ensure type safety by casting the list to List<Map<String, dynamic>>
     messages = List<Map<String, dynamic>>.from(messages);
 
-    // Add the new message to the list
+    /// Add the new message to the list of messages
     messages.add(newMessage);
 
-    // Write the updated messages back to storage
+    /// Persist the updated messages back to storage
     await box.write("sunday-message-conversation-$conversationUUID", messages);
 
+    /// Log the successful addition of the new message
     sundayPrint("New message added to conversation: $conversationUUID");
   } catch (e) {
+    /// Log the error and throw an exception if adding the message fails
     sundayPrint("Error adding new message: $e");
     throw Exception("Error adding new message");
   }

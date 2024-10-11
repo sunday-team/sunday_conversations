@@ -4,19 +4,31 @@ import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 import 'package:uuid/uuid.dart';
 
-/// Create a new conversation
+/// Creates a new conversation and stores it in local storage.
+///
+/// This function creates a new conversation with the provided details,
+/// initializes it with a welcome message, and stores it in the local storage.
+///
+/// Parameters:
+/// - [conversationName]: The name of the new conversation.
+/// - [userId]: The unique identifier of the user creating the conversation.
+/// - [description]: A brief description of the conversation.
+/// - [groupName]: The name of the group (if applicable).
+///
+/// Throws an [Exception] if there's an error writing to GetStorage.
 Future<void> asyncCreateNewConversation({
   required String conversationName,
   required String userId,
   required String description,
   required String groupName,
 }) async {
-  // Initialize GetStorage
+  /// Initialize GetStorage for data persistence
   SundayGetStorage box = SundayGetStorage();
 
+  /// Generate a unique identifier for the new conversation
   String conversationUUID = const Uuid().v4();
 
-  // Initialize the conversation with a welcome message
+  /// Initialize the conversation with a welcome message
   var messageConv = messageSchema(
       content: "",
       autoMessageId: "automessageid:conversation-start",
@@ -25,13 +37,13 @@ Future<void> asyncCreateNewConversation({
       distributed: true,
       seen: true);
 
-  // get conversations list
+  /// Retrieve existing conversations list or initialize an empty list
   var conversationsList = await box.read("sunday-message-conversations") ?? [];
 
-  // Ensure each item in the list is a Map<String, dynamic>
+  /// Ensure type safety by casting the list to List<Map<String, dynamic>>
   conversationsList = conversationsList.cast<Map<String, dynamic>>();
 
-  // define new conversation
+  /// Define the new conversation using the conversation schema
   var conv = conversationSchema(
       name: conversationName,
       description: description,
@@ -41,27 +53,26 @@ Future<void> asyncCreateNewConversation({
       isGroup: false,
       conversationUUID: conversationUUID.toString());
 
-  // add the conversation
+  /// Add the new conversation to the list
   conversationsList.add(conv);
 
-  // Add error handling for write operations
+  /// Persist the updated data to storage
   try {
-    // write conversations
-    box.write("sunday-message-conversations", conversationsList);
+    /// Write the updated conversations list
+    await box.write("sunday-message-conversations", conversationsList);
 
-    // write the new conversation
-    box.write("sunday-message-conversation-$conversationUUID", messageConv);
-
-    // catch in case of error
+    /// Write the new conversation's initial message
+    await box.write(
+        "sunday-message-conversation-$conversationUUID", messageConv);
   } catch (e) {
-    // print the error
+    /// Log the error for debugging purposes
     sundayPrint("Error writing to GetStorage: $e");
 
-    // send to flutter the error
+    /// Propagate the error to the caller
     throw Exception("Error writing to GetStorage");
   }
 
-  // Debug statements to check data
-  sundayPrint(box.read("sunday-message-conversations"));
-  sundayPrint(box.read("sunday-message-conversation-$userId"));
+  /// Debug statements to verify data persistence
+  sundayPrint(await box.read("sunday-message-conversations"));
+  sundayPrint(await box.read("sunday-message-conversation-$userId"));
 }

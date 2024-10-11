@@ -1,3 +1,4 @@
+/// Sunday Conversations library
 library sunday_conversations;
 
 import 'dart:async';
@@ -13,20 +14,26 @@ import 'messages/add_new_message.dart';
 import 'messages/delete_messages.dart';
 import 'messages/edit_message.dart';
 
-/// A Calculator.
+/// A Calculator class for demonstration purposes.
 class Calculator {
   /// Returns [value] plus 1.
   int addOne(int value) => value + 1;
 }
 
-/// A class to intialize Sunday Conversations
+/// A class to initialize and manage Sunday Conversations
 class SundayConversations {
-  /// intialize Sunday Conversations
+  /// Initialize Sunday Conversations
   void init() {
     GetStorage.init();
     sundayPrint('Sunday Conversations initialized');
   }
 
+  /// Create a new conversation
+  ///
+  /// [conversationName] The name of the conversation
+  /// [userId] The ID of the user creating the conversation
+  /// [description] A description of the conversation
+  /// [groupName] The name of the group the conversation belongs to
   void createNewConversation({
     required String conversationName,
     required String userId,
@@ -40,6 +47,13 @@ class SundayConversations {
         groupName: groupName);
   }
 
+  /// Create a new group conversation
+  ///
+  /// [conversationName] The name of the group conversation
+  /// [userId] The ID of the user creating the group conversation
+  /// [description] A description of the group conversation
+  /// [groupName] The name of the group
+  /// [users] A list of users to be added to the group conversation
   void createNewGroupConversation({
     required String conversationName,
     required String userId,
@@ -55,6 +69,10 @@ class SundayConversations {
         users: users);
   }
 
+  /// Add a new message to a conversation
+  ///
+  /// [conversationUUID] The UUID of the conversation
+  /// [content] The content of the message
   void addNewMessage({
     required String conversationUUID,
     required String content,
@@ -66,6 +84,10 @@ class SundayConversations {
         reaction: []);
   }
 
+  /// Delete a message from a conversation
+  ///
+  /// [conversationUUID] The UUID of the conversation
+  /// [messageId] The ID of the message to be deleted
   void deleteMessage({
     required String conversationUUID,
     required String messageId,
@@ -74,6 +96,12 @@ class SundayConversations {
         conversationUUID: conversationUUID, messageId: messageId);
   }
 
+  /// Edit a message in a conversation
+  ///
+  /// [conversationUUID] The UUID of the conversation
+  /// [messageId] The ID of the message to be edited
+  /// [key] The key of the property to be edited
+  /// [value] The new value for the property
   void editMessage({
     required String conversationUUID,
     required String messageId,
@@ -87,10 +115,18 @@ class SundayConversations {
         value: value);
   }
 
+  /// Delete a conversation
+  ///
+  /// [conversationUUID] The UUID of the conversation to be deleted
   void deleteConversation({required String conversationUUID}) {
     asyncDeleteConversation(conversationUUID: conversationUUID);
   }
 
+  /// Stream a conversation
+  ///
+  /// [conversationUUID] The UUID of the conversation to stream
+  ///
+  /// Returns a [Stream] of messages from the conversation
   Stream<dynamic> streamConversation({required String conversationUUID}) {
     return asyncStreamConversation(conversationUUID).map((message) {
       sundayPrint('Received message: $message');
@@ -103,6 +139,11 @@ class SundayConversations {
     }));
   }
 
+  /// Edit a conversation's properties
+  ///
+  /// [conversationUUID] The UUID of the conversation to be edited
+  /// [property] The property of the conversation to be edited
+  /// [newValue] The new value for the property
   void editConversation({
     required String conversationUUID,
     required String property,
