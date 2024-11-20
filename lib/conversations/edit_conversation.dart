@@ -1,14 +1,16 @@
+import 'package:get_storage/get_storage.dart';
 import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 
 /// Edits a specific property of a conversation.
 ///
 /// This function updates a single property of a conversation identified by its UUID.
+/// If the property doesn't exist, it will be created.
 /// It also updates the 'updatedAt' timestamp of the conversation.
 ///
 /// Parameters:
 /// - [conversationUUID]: The unique identifier of the conversation to be edited.
-/// - [property]: The name of the property to be updated.
+/// - [property]: The name of the property to be updated or created.
 /// - [newValue]: The new value to be set for the specified property.
 ///
 /// Throws an [Exception] if the conversation is not found or if there's an error during the editing process.
@@ -19,7 +21,7 @@ Future<void> asyncEditConversation({
 }) async {
   try {
     /// Initialize GetStorage for data persistence
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     /// Retrieve the list of conversations from storage
     var conversationsList =
@@ -28,22 +30,21 @@ Future<void> asyncEditConversation({
     /// Ensure type safety by casting the list to List<Map<String, dynamic>>
     conversationsList = List<Map<String, dynamic>>.from(conversationsList);
 
-    /// Find the conversation to edit based on the provided UUID
-    var conversationToEdit = conversationsList.firstWhere(
+    /// Find the index of the conversation to edit
+    int conversationIndex = conversationsList.indexWhere(
       (conv) => conv['uuid'] == conversationUUID,
-      orElse: () => null,
     );
 
     /// Throw an exception if the conversation is not found
-    if (conversationToEdit == null) {
+    if (conversationIndex == -1) {
       throw Exception("Conversation not found");
     }
 
-    /// Update the specified property with the new value
-    conversationToEdit[property] = newValue;
+    /// Create or update the specified property with the new value
+    conversationsList[conversationIndex][property] = newValue;
 
     /// Update the 'updatedAt' timestamp to reflect the recent change
-    conversationToEdit['updatedAt'] = DateTime.now().toString();
+    conversationsList[conversationIndex]['updatedAt'] = DateTime.now().toString();
 
     /// Persist the updated conversations list back to storage
     await box.write("sunday-message-conversations", conversationsList);

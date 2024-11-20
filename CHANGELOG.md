@@ -29,3 +29,9 @@
 ## 0.1.1
 
 * Documented all functions.
+
+## 0.1.2
+
+* added new functions
+
+* fix functions

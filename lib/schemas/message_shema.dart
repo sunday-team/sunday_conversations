@@ -23,6 +23,9 @@ Map<String, dynamic> messageSchema({
   required bool seen,
   List<Map<String, String>>? attachments,
 }) {
+  // Get current timestamp and convert to ISO string immediately to avoid DateTime serialization issues
+  final String timestamp = DateTime.now().toIso8601String();
+  
   return {
     "content": {
       "autoMessageId": autoMessageId,
@@ -30,7 +33,7 @@ Map<String, dynamic> messageSchema({
     },
     'messageId': const Uuid().v4(),
     'isSender': isSender,
-    'timestamp': DateTime.now().toString(),
+    // 'timestamp': timestamp,
     'reaction': reaction,
     "distributed": distributed,
     "seen": seen,

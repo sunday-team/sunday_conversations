@@ -4,6 +4,7 @@ library sunday_conversations;
 import 'dart:async';
 
 import 'package:get_storage/get_storage.dart';
+import 'package:sunday_conversations/conversations/get_conversation.dart';
 import 'package:sunday_core/Print/print.dart';
 import 'conversations/create_new_conversation.dart';
 import 'conversations/create_new_group_conversation.dart';
@@ -34,17 +35,20 @@ class SundayConversations {
   /// [userId] The ID of the user creating the conversation
   /// [description] A description of the conversation
   /// [groupName] The name of the group the conversation belongs to
-  void createNewConversation({
+  /// [firstMessage] The first message of the conversation
+  String createNewConversation({
     required String conversationName,
     required String userId,
     required String description,
     required String groupName,
+    required String firstMessage,
   }) {
-    asyncCreateNewConversation(
+    return CreateNewConversation(
         conversationName: conversationName,
         userId: userId,
         description: description,
-        groupName: groupName);
+        groupName: groupName,
+        firstMessage: firstMessage);
   }
 
   /// Create a new group conversation
@@ -73,14 +77,15 @@ class SundayConversations {
   ///
   /// [conversationUUID] The UUID of the conversation
   /// [content] The content of the message
-  void addNewMessage({
+  Future<void> addNewMessage({
     required String conversationUUID,
     required String content,
-  }) {
-    asyncAddNewMessage(
+    required bool isSender,
+  }) async {
+    await AddNewMessage(
         conversationUUID: conversationUUID,
         content: content,
-        isSender: false,
+        isSender: isSender,
         reaction: []);
   }
 
@@ -153,5 +158,16 @@ class SundayConversations {
         conversationUUID: conversationUUID,
         property: property,
         newValue: newValue);
+  }
+
+  /// Get a conversation's properties
+  ///
+  /// [conversationUUID] The UUID of the conversation to get the properties of
+  ///
+  /// Returns a [Map] of the conversation's properties
+  Map<String, dynamic> getConversationProperties({
+    required String conversationUUID,
+  }) {
+    return asyncGetConversationProperties(conversationUUID);
   }
 }

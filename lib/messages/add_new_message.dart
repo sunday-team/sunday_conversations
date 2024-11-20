@@ -1,3 +1,4 @@
+import 'package:get_storage/get_storage.dart';
 import 'package:sunday_conversations/schemas/message_shema.dart';
 import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
@@ -15,7 +16,7 @@ import 'package:sunday_core/Print/print.dart';
 /// - [attachments]: An optional list of attachments for the message.
 ///
 /// Throws an [Exception] if there's an error adding the new message.
-Future<void> asyncAddNewMessage({
+Future<void> AddNewMessage({
   required String conversationUUID,
   required String content,
   required bool isSender,
@@ -24,7 +25,7 @@ Future<void> asyncAddNewMessage({
 }) async {
   try {
     /// Initialize GetStorage for data persistence
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     /// Create a new message using the message schema
     var newMessage = messageSchema(
@@ -38,23 +39,22 @@ Future<void> asyncAddNewMessage({
     );
 
     /// Retrieve existing messages for the conversation
-    var messages =
-        await box.read("sunday-message-conversation-$conversationUUID") ?? [];
+    var messages = await box.read("sunday-message-conversation-$conversationUUID");
 
-    /// Ensure type safety by casting the list to List<Map<String, dynamic>>
-    messages = List<Map<String, dynamic>>.from(messages);
+    var newMessages = messages;
+
+    sundayPrint(messages);
 
     /// Add the new message to the list of messages
-    messages.add(newMessage);
+    newMessages.add(newMessage);
 
     /// Persist the updated messages back to storage
-    await box.write("sunday-message-conversation-$conversationUUID", messages);
+    await box.write("sunday-message-conversation-$conversationUUID", newMessages);
 
     /// Log the successful addition of the new message
     sundayPrint("New message added to conversation: $conversationUUID");
   } catch (e) {
     /// Log the error and throw an exception if adding the message fails
     sundayPrint("Error adding new message: $e");
-    throw Exception("Error adding new message");
   }
 }

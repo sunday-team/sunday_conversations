@@ -1,4 +1,4 @@
-import 'package:sunday_core/GetGtorage/get_storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 
 /// Edits a specific message in a conversation.
@@ -21,7 +21,7 @@ Future<void> asyncEditMessage({
 }) async {
   try {
     // Initialize GetStorage
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     // Get the existing messages for the conversation
     var messages =
@@ -39,7 +39,7 @@ Future<void> asyncEditMessage({
     }
 
     // Edit the specified key-value pair in the message
-    messages[indexToEdit][key] = value;
+    messages[indexToEdit]["content"]["content"] = value;
 
     // Update the 'updatedAt' timestamp
     messages[indexToEdit]['updatedAt'] = DateTime.now().toString();
