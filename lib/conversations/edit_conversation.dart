@@ -23,20 +23,17 @@ Future<void> asyncEditConversation({
     final box = GetStorage();
 
     /// Retrieve the list of conversations from storage
-    var conversationsList =
-        await box.read("sunday-message-conversations") ?? [];
-
-    /// Ensure type safety by casting the list to List<Map<String, dynamic>>
-    conversationsList = List<Map<String, dynamic>>.from(conversationsList);
+    List<Map<String, dynamic>> conversationsList =
+        box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ?? <Map<String, dynamic>>[];
 
     /// Find the index of the conversation to edit
-    int conversationIndex = conversationsList.indexWhere(
-      (conv) => conv['uuid'] == conversationUUID,
+    final int conversationIndex = conversationsList.indexWhere(
+      (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID,
     );
 
     /// Throw an exception if the conversation is not found
     if (conversationIndex == -1) {
-      throw Exception("Conversation not found");
+      throw Exception('Conversation not found');
     }
 
     /// Create or update the specified property with the new value
@@ -46,14 +43,14 @@ Future<void> asyncEditConversation({
     conversationsList[conversationIndex]['updatedAt'] = DateTime.now().toString();
 
     /// Persist the updated conversations list back to storage
-    await box.write("sunday-message-conversations", conversationsList);
+    await box.write('sunday-message-conversations', conversationsList);
 
     /// Log the successful edit operation
     sundayPrint(
-        "Conversation with UUID '$conversationUUID' edited successfully");
+        'Conversation with UUID \'$conversationUUID\' edited successfully');
   } catch (e) {
     /// Log the error and throw an exception if editing the conversation fails
-    sundayPrint("Error editing conversation: $e");
-    throw Exception("Error editing conversation");
+    sundayPrint('Error editing conversation: $e');
+    throw Exception('Error editing conversation');
   }
 }

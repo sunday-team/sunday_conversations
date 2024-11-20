@@ -19,7 +19,7 @@ import 'package:uuid/uuid.dart';
 /// - [String] The UUID of the created conversation.
 ///
 /// Throws an [Exception] if there's an error writing to GetStorage.
-String CreateNewConversation({
+String asyncCreateNewConversation({
   required String conversationName,
   required String userId,
   required String description,
@@ -35,24 +35,26 @@ String CreateNewConversation({
   /// Initialize the conversation with a welcome message
   var messageConv = [messageSchema(
       content: firstMessage,
-      autoMessageId: "automessageid:conversation-start",
+      autoMessageId: 'automessageid:conversation-start',
       isSender: true,
       reaction: [],
       distributed: true,
       seen: true)];
 
   /// Retrieve existing conversations list or initialize an empty list
-  var conversationsList = box.read("sunday-message-conversations") ?? [];
+  List<Map<String, dynamic>> conversationsList =
+      box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ??
+          <Map<String, dynamic>>[];
 
   /// Ensure type safety by casting the list to List<Map<String, dynamic>>
-  conversationsList = conversationsList.cast<Map<String, dynamic>>();
+  conversationsList = List<Map<String, dynamic>>.from(conversationsList);
 
   /// Define the new conversation using the conversation schema
   var conv = conversationSchema(
       name: conversationName,
       description: description,
       userUuid: userId,
-      notes: "",
+      notes: '',
       messagesPerBox: 25,
       isGroup: false,
       conversationUUID: conversationUUID.toString());
@@ -63,22 +65,22 @@ String CreateNewConversation({
   /// Persist the updated data to storage
   try {
     /// Write the updated conversations list
-    box.write("sunday-message-conversations", conversationsList);
+    box.write('sunday-message-conversations', conversationsList);
 
     /// Write the new conversation's initial message
     box.write(
-        "sunday-message-conversation-$conversationUUID", messageConv);
+        'sunday-message-conversation-$conversationUUID', messageConv);
   } catch (e) {
     /// Log the error for debugging purposes
-    sundayPrint("Error writing to GetStorage: $e");
+    sundayPrint('Error writing to GetStorage: $e');
 
     /// Propagate the error to the caller
-    throw Exception("Error writing to GetStorage");
+    throw Exception('Error writing to GetStorage');
   }
 
   /// Debug statements to verify data persistence
-  sundayPrint(box.read("sunday-message-conversations"));
-  sundayPrint(box.read("sunday-message-conversation-$userId"));
+  sundayPrint(box.read<List<dynamic>>('sunday-message-conversations'));
+  sundayPrint(box.read<List<dynamic>>('sunday-message-conversation-$userId'));
 
   return conversationUUID;
 }

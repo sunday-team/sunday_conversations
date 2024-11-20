@@ -15,8 +15,8 @@ Future<void> asyncDeleteConversation({required String conversationUUID}) async {
     final box = GetStorage();
 
     // Get conversations list
-    var conversationsList =
-        await box.read("sunday-message-conversations") ?? [];
+    List<Map<String, dynamic>> conversationsList =
+        box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ?? [];
 
     // Ensure each item in the list is a Map<String, dynamic>
     conversationsList = List<Map<String, dynamic>>.from(conversationsList);
@@ -24,29 +24,29 @@ Future<void> asyncDeleteConversation({required String conversationUUID}) async {
     /// Finds the conversation to delete based on the provided UUID.
     ///
     /// Returns null if no matching conversation is found.
-    var conversationToDelete = conversationsList.firstWhere(
-      (conv) => conv['uuid'] == conversationUUID,
-      orElse: () => null,
+    Map<String, dynamic>? conversationToDelete = conversationsList.firstWhere(
+      (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID,
+      orElse: () => <String, dynamic>{},
     );
 
-    if (conversationToDelete == null) {
-      throw Exception("Conversation not found");
+    if (conversationToDelete.isEmpty) {
+      throw Exception('Conversation not found');
     }
 
     // Remove the conversation from the list
-    conversationsList.removeWhere((conv) => conv['uuid'] == conversationUUID);
+    conversationsList.removeWhere((Map<String, dynamic> conv) => conv['uuid'] == conversationUUID);
 
     // Write updated conversations list
-    await box.write("sunday-message-conversations", conversationsList);
+    await box.write('sunday-message-conversations', conversationsList);
 
     // Delete the conversation messages
-    String conversationName = conversationToDelete['name'];
-    await box.remove("sunday-message-conversation-$conversationName");
+    String conversationName = conversationToDelete['name'] as String;
+    await box.remove('sunday-message-conversation-$conversationName');
 
     sundayPrint(
-        "Conversation with UUID '$conversationUUID' deleted successfully");
+        'Conversation with UUID \'$conversationUUID\' deleted successfully');
   } catch (e) {
-    sundayPrint("Error deleting conversation: $e");
-    throw Exception("Error deleting conversation");
+    sundayPrint('Error deleting conversation: $e');
+    throw Exception('Error deleting conversation');
   }
 }

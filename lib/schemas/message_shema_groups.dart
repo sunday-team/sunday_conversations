@@ -23,29 +23,29 @@ Map<String, dynamic> messageSchemaGroup({
   List<Map<String, String>>? attachments,
 }) {
   return {
-    "content": {
-      "autoMessageId": autoMessageId,
-      "content": content,
+    'content': {
+      'autoMessageId': autoMessageId,
+      'content': content,
     },
     'messageId': const Uuid().v4(),
     'isSender': false,
     'timestamp': DateTime.now().toString(),
     'reaction': users
         .map((user) => {
-              "userId": user["userId"],
-              "seen": false,
-              "distributed": true,
+              'userId': user['userId'],
+              'seen': false,
+              'distributed': true,
             })
         .toList(),
-    "info": users
+    'info': users
         .map((user) => {
-              "userId": user["userId"],
-              "seen": false,
-              "distributed": true,
+              'userId': user['userId'],
+              'seen': false,
+              'distributed': true,
             })
         .toList(),
-    "attachments": attachments ?? [],
+    'attachments': attachments ?? [],
   };
 }
 
-/// Note: For conversation start, use "automessageid:conversation-start".
+/// Note: For conversation start, use 'automessageid:conversation-start'.

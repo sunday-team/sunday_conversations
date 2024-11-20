@@ -21,34 +21,35 @@ Future<void> asyncDeleteMessage({
 
     /// Retrieves existing messages for the conversation from local storage.
     /// Returns an empty list if no messages are found.
-    var messages =
-        await box.read("sunday-message-conversation-$conversationUUID") ?? [];
+    List<Map<String, dynamic>> messages =
+        box.read<List<Map<String, dynamic>>>('sunday-message-conversation-$conversationUUID') ?? <Map<String, dynamic>>[];
 
     /// Ensures that each item in the messages list is of type Map<String, dynamic>.
     /// This step is crucial for type safety and proper data handling.
-    messages = List<Map<String, dynamic>>.from(messages);
+    messages = List<Map<String, dynamic>>.from(messages as Iterable);
 
     /// Finds the index of the message to be deleted.
     /// Returns -1 if the message is not found.
-    int indexToDelete =
-        messages.indexWhere((message) => message['messageId'] == messageId);
+    final indexToDelete = messages.indexWhere(
+      (Map<String, dynamic> message) => message['messageId'] == messageId,
+    );
 
     if (indexToDelete == -1) {
-      throw Exception("Message not found");
+      throw Exception('Message not found');
     }
 
     /// Removes the message from the list at the found index.
     messages.removeAt(indexToDelete);
 
     /// Writes the updated messages back to local storage.
-    await box.write("sunday-message-conversation-$conversationUUID", messages);
+    await box.write('sunday-message-conversation-$conversationUUID', messages);
 
     /// Logs a success message with the deleted message's ID and conversation UUID.
     sundayPrint(
-        "Message with ID '$messageId' deleted from conversation: $conversationUUID");
+        'Message with ID \'$messageId\' deleted from conversation: $conversationUUID');
   } catch (e) {
     /// Logs the error and rethrows an exception with a generic error message.
-    sundayPrint("Error deleting message: $e");
-    throw Exception("Error deleting message");
+    sundayPrint('Error deleting message: $e');
+    throw Exception('Error deleting message');
   }
 }

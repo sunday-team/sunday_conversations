@@ -27,18 +27,18 @@ Map<String, dynamic> messageSchema({
   // final String timestamp = DateTime.now().toIso8601String();
   
   return {
-    "content": {
-      "autoMessageId": autoMessageId,
-      "content": content,
+    'content': {
+      'autoMessageId': autoMessageId,
+      'content': content,
     },
     'messageId': const Uuid().v4(),
     'isSender': isSender,
     // 'timestamp': timestamp,
     'reaction': reaction,
-    "distributed": distributed,
-    "seen": seen,
-    "attachments": attachments ?? [],
+    'distributed': distributed,
+    'seen': seen,
+    'attachments': attachments ?? [],
   };
 }
 
-/// Note: For conversation start, use "automessageid:conversation-start".
+/// Note: For conversation start, use 'automessageid:conversation-start'.

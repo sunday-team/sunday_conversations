@@ -15,7 +15,7 @@ import 'package:sunday_core/Print/print.dart';
 /// - [attachments]: An optional list of attachments for the message.
 ///
 /// Throws an [Exception] if there's an error adding the new message.
-Future<void> AddNewMessage({
+Future<void> asyncAddNewMessage({
   required String conversationUUID,
   required String content,
   required bool isSender,
@@ -29,7 +29,7 @@ Future<void> AddNewMessage({
     /// Create a new message using the message schema
     var newMessage = messageSchema(
       content: content,
-      autoMessageId: "automessageid:new-message",
+      autoMessageId: 'automessageid:new-message',
       isSender: isSender,
       reaction: reaction,
       distributed: true,
@@ -38,7 +38,7 @@ Future<void> AddNewMessage({
     );
 
     /// Retrieve existing messages for the conversation
-    var messages = await box.read("sunday-message-conversation-$conversationUUID");
+    List<Map<String, dynamic>> messages = box.read<List<Map<String, dynamic>>>('sunday-message-conversation-$conversationUUID') ?? <Map<String, dynamic>>[];
 
     var newMessages = messages;
 
@@ -48,12 +48,12 @@ Future<void> AddNewMessage({
     newMessages.add(newMessage);
 
     /// Persist the updated messages back to storage
-    await box.write("sunday-message-conversation-$conversationUUID", newMessages);
+    await box.write('sunday-message-conversation-$conversationUUID', newMessages);
 
     /// Log the successful addition of the new message
-    sundayPrint("New message added to conversation: $conversationUUID");
+    sundayPrint('New message added to conversation: $conversationUUID');
   } catch (e) {
     /// Log the error and throw an exception if adding the message fails
-    sundayPrint("Error adding new message: $e");
+    sundayPrint('Error adding new message: $e');
   }
 }

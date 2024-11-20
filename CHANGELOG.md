@@ -42,3 +42,7 @@
 * fix functions
 
 * use sunday_get_storage instead of get_storage
+
+## 0.1.4
+
+* Changed to use more linting.

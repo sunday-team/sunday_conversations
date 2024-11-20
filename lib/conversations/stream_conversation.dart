@@ -19,7 +19,7 @@ Stream<dynamic> asyncStreamConversation(String conversationUUID) {
   final box = GetStorage();
 
   /// Construct the key for accessing the specific conversation's messages.
-  final key = "sunday-message-conversation-$conversationUUID";
+  final key = 'sunday-message-conversation-$conversationUUID';
 
   /// Create and return a stream of messages.
   final controller = StreamController<dynamic>();
@@ -27,17 +27,19 @@ Stream<dynamic> asyncStreamConversation(String conversationUUID) {
   box.listenKey(key, (value) {
     if (value != null) {
       /// If messages exist, add them to the stream
-      for (var message in value) {
-        controller.add(message);
+      if (value is Iterable) {
+        for (var message in value) {
+          controller.add(message);
+        }
       }
     } else {
       /// Log a message if no messages are found for the conversation.
-      sundayPrint("No messages found for conversation: $conversationUUID");
+      sundayPrint('No messages found for conversation: $conversationUUID');
     }
   });
 
-  return controller.stream.handleError((error) {
+  return controller.stream.handleError((Object error) {
     /// Log any errors that occur during the streaming process.
-    sundayPrint("Error streaming conversation: $error");
+    sundayPrint('Error streaming conversation: $error');
   });
 }

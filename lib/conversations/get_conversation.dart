@@ -16,30 +16,30 @@ Map<String, dynamic> asyncGetConversationProperties(String conversationUUID) {
     final box = GetStorage();
 
     /// Retrieve the list of conversations from storage
-    var conversationsList = box.read("sunday-message-conversations") ?? [];
+    List<dynamic> rawList = box.read<List<dynamic>>('sunday-message-conversations') ?? <dynamic>[];
 
     /// Ensure type safety by casting the list to List<Map<String, dynamic>>
-    conversationsList = List<Map<String, dynamic>>.from(conversationsList);
+    List<Map<String, dynamic>> conversationsList = List<Map<String, dynamic>>.from(rawList);
 
     /// Find the index of the conversation to get the properties of
     int conversationIndex = conversationsList.indexWhere(
-      (conv) => conv['uuid'] == conversationUUID,
+      (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID,
     );
 
     /// Throw an exception if the conversation is not found
     if (conversationIndex == -1) {
-      throw Exception("Conversation not found");
+      throw Exception('Conversation not found');
     }
 
     /// Log the successful retrieval
     sundayPrint(
-        "Properties retrieved for conversation with UUID '$conversationUUID'");
+        'Properties retrieved for conversation with UUID \'$conversationUUID\'');
 
     /// Return the properties of the conversation
-    return conversationsList[conversationIndex];
+    return Map<String, dynamic>.from(conversationsList[conversationIndex]);
   } catch (e) {
     /// Log the error and throw an exception if retrieving the properties fails
-    sundayPrint("Error getting conversation properties: $e");
-    throw Exception("Error getting conversation properties");
+    sundayPrint('Error getting conversation properties: $e');
+    throw Exception('Error getting conversation properties');
   }
 }

@@ -21,6 +21,7 @@ Map<String, dynamic> conversationSchemaGroup({
   required int messagesPerBox,
   required bool isGroup,
   required String conversationUUID,
+  List<Map<String, dynamic>> infos = const [],
 }) {
   /// Get the current timestamp for creation and update times.
   DateTime now = DateTime.now();
@@ -33,7 +34,7 @@ Map<String, dynamic> conversationSchemaGroup({
     'createdAt': now,
     'updatedAt': now,
     'notes': notes,
-    'infos': [],
+    'infos': infos,
     'messagesPerBox': messagesPerBox,
     'group': isGroup,
     'uuid': conversationUUID

@@ -35,32 +35,29 @@ Future<void> asyncCreateNewGroupConversation({
 
     // Initialize the conversation with a welcome message
     var messageConv = messageSchemaGroup(
-      content: "",
+      content: '',
       isSender: false,
       reaction: users
           .map((user) => {
-                "userId": user["userId"],
-                "seen": false, // Default value for seen
-                "distributed": true, // Default value for distributed
+                'userId': user['userId'],
+                'seen': false, // Default value for seen
+                'distributed': true, // Default value for distributed
               })
           .toList(),
-      autoMessageId: "automessageid:conversation-start",
+      autoMessageId: 'automessageid:conversation-start',
       users: users,
     );
 
     // Get existing conversations list
-    var conversationsList =
-        await box.read("sunday-message-conversations") ?? [];
+    List<Map<String, dynamic>> conversationsList =
+        (box.read<List<dynamic>>('sunday-message-conversations') ?? []).cast<Map<String, dynamic>>();
 
-    // Ensure each item in the list is a Map<String, dynamic>
-    conversationsList = List<Map<String, dynamic>>.from(conversationsList);
-
-    // Define new conversation
+    // Define new conversation 
     var conv = conversationSchema(
       name: conversationName,
       description: description,
       userUuid: userId,
-      notes: "",
+      notes: '',
       messagesPerBox: 25,
       isGroup: true,
       conversationUUID: conversationUUID,
@@ -70,16 +67,16 @@ Future<void> asyncCreateNewGroupConversation({
     conversationsList.add(conv);
 
     // Write updated conversations list
-    await box.write("sunday-message-conversations", conversationsList);
+    await box.write('sunday-message-conversations', conversationsList);
 
     // Write the new conversation messages
     await box.write(
-        "sunday-message-conversation-$conversationUUID", messageConv);
+        'sunday-message-conversation-$conversationUUID', messageConv);
   } catch (e) {
     // Log the error
-    sundayPrint("Error writing to GetStorage: $e");
+    sundayPrint('Error writing to GetStorage: $e');
 
     // Throw an exception to be handled by the caller
-    throw Exception("Error writing to GetStorage");
+    throw Exception('Error writing to GetStorage');
   }
 }

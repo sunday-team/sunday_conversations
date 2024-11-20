@@ -1,12 +1,12 @@
 /// Sunday Conversations library
-library sunday_conversations;
+library;
 
 import 'dart:async';
 
+import 'package:sunday_conversations/conversations/create_new_conversation.dart';
 import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:sunday_conversations/conversations/get_conversation.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'conversations/create_new_conversation.dart';
 import 'conversations/create_new_group_conversation.dart';
 import 'conversations/delete_conversation.dart';
 import 'conversations/edit_conversation.dart';
@@ -43,7 +43,7 @@ class SundayConversations {
     required String groupName,
     required String firstMessage,
   }) {
-    return CreateNewConversation(
+    return asyncCreateNewConversation(
         conversationName: conversationName,
         userId: userId,
         description: description,
@@ -82,7 +82,7 @@ class SundayConversations {
     required String content,
     required bool isSender,
   }) async {
-    await AddNewMessage(
+    await asyncAddNewMessage(
         conversationUUID: conversationUUID,
         content: content,
         isSender: isSender,
@@ -136,7 +136,7 @@ class SundayConversations {
     return asyncStreamConversation(conversationUUID).map((message) {
       sundayPrint('Received message: $message');
       return message;
-    }).handleError((error) {
+    }).handleError((Object error) {
       sundayPrint('Error occurred: $error');
     }).transform(StreamTransformer.fromHandlers(handleDone: (sink) {
       sundayPrint('Stream closed');

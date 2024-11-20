@@ -5,7 +5,8 @@ Map<String, dynamic> conversationSchema(
     required String notes,
     required int messagesPerBox,
     required bool isGroup,
-    required String conversationUUID}) {
+    required String conversationUUID,
+    List<dynamic>? infos}) {
   String now = DateTime.now().toIso8601String();
   return {
     'schema-version': '1.0.0',
@@ -15,7 +16,7 @@ Map<String, dynamic> conversationSchema(
     'createdAt': now,
     'updatedAt': now,
     'notes': notes,
-    'infos': [],
+    'infos': infos,
     'messagesPerBox': messagesPerBox,
     'group': isGroup,
     'uuid': conversationUUID
