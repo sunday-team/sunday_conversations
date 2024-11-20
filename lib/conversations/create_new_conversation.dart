@@ -1,8 +1,7 @@
-import 'package:get_storage/get_storage.dart';
 import 'package:sunday_conversations/schemas/conversation_schema.dart';
 import 'package:sunday_conversations/schemas/message_shema.dart';
-import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:uuid/uuid.dart';
 
 /// Creates a new conversation and stores it in local storage.

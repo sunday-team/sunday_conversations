@@ -1,5 +1,4 @@
-import 'package:get_storage/get_storage.dart';
-import 'package:sunday_core/GetGtorage/get_storage.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
 
 /// Edits a specific property of a conversation.

@@ -1,3 +1,4 @@
+
 ## 0.0.1
 
 * Initial release.
@@ -35,3 +36,9 @@
 * added new functions
 
 * fix functions
+
+## 0.1.3
+
+* fix functions
+
+* use sunday_get_storage instead of get_storage

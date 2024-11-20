@@ -1,5 +1,5 @@
-import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 
 /// Deletes a specific message from a conversation.
 ///
@@ -17,7 +17,7 @@ Future<void> asyncDeleteMessage({
 }) async {
   try {
     // Initialize GetStorage
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     /// Retrieves existing messages for the conversation from local storage.
     /// Returns an empty list if no messages are found.

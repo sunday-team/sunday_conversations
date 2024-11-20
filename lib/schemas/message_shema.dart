@@ -24,7 +24,7 @@ Map<String, dynamic> messageSchema({
   List<Map<String, String>>? attachments,
 }) {
   // Get current timestamp and convert to ISO string immediately to avoid DateTime serialization issues
-  final String timestamp = DateTime.now().toIso8601String();
+  // final String timestamp = DateTime.now().toIso8601String();
   
   return {
     "content": {

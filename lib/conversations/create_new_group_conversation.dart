@@ -1,7 +1,7 @@
 import 'package:sunday_conversations/schemas/conversation_schema.dart';
 import 'package:sunday_conversations/schemas/message_shema_groups.dart';
-import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:uuid/uuid.dart';
 
 /// Creates a new group conversation and stores it in the local storage.
@@ -28,7 +28,7 @@ Future<void> asyncCreateNewGroupConversation({
 }) async {
   try {
     // Initialize GetStorage
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     // Generate a unique identifier for the conversation
     String conversationUUID = const Uuid().v4();

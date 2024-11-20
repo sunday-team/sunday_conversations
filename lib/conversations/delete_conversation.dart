@@ -1,5 +1,5 @@
-import 'package:sunday_core/GetGtorage/get_storage.dart';
 import 'package:sunday_core/Print/print.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 
 /// Deletes a conversation from storage based on its UUID.
 ///
@@ -12,7 +12,7 @@ import 'package:sunday_core/Print/print.dart';
 Future<void> asyncDeleteConversation({required String conversationUUID}) async {
   try {
     // Initialize GetStorage
-    final box = SundayGetStorage();
+    final box = GetStorage();
 
     // Get conversations list
     var conversationsList =

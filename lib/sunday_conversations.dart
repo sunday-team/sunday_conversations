@@ -3,7 +3,7 @@ library sunday_conversations;
 
 import 'dart:async';
 
-import 'package:get_storage/get_storage.dart';
+import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:sunday_conversations/conversations/get_conversation.dart';
 import 'package:sunday_core/Print/print.dart';
 import 'conversations/create_new_conversation.dart';
