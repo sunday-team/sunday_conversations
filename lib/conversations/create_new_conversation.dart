@@ -1,3 +1,5 @@
+// ignore_for_file: inference_failure_on_function_invocation, inference_failure_on_collection_literal
+
 import 'package:sunday_conversations/schemas/conversation_schema.dart';
 import 'package:sunday_conversations/schemas/message_shema.dart';
 import 'package:sunday_core/Print/print.dart';
@@ -42,12 +44,7 @@ String asyncCreateNewConversation({
       seen: true)];
 
   /// Retrieve existing conversations list or initialize an empty list
-  List<Map<String, dynamic>> conversationsList =
-      box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ??
-          <Map<String, dynamic>>[];
-
-  /// Ensure type safety by casting the list to List<Map<String, dynamic>>
-  conversationsList = List<Map<String, dynamic>>.from(conversationsList);
+  var conversationsList = box.read('sunday-message-conversations') ?? [];
 
   /// Define the new conversation using the conversation schema
   var conv = conversationSchema(
@@ -79,8 +76,8 @@ String asyncCreateNewConversation({
   }
 
   /// Debug statements to verify data persistence
-  sundayPrint(box.read<List<dynamic>>('sunday-message-conversations'));
-  sundayPrint(box.read<List<dynamic>>('sunday-message-conversation-$userId'));
+  sundayPrint(box.read('sunday-message-conversations'));
+  sundayPrint(box.read('sunday-message-conversation-$userId'));
 
   return conversationUUID;
 }

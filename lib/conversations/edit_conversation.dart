@@ -23,12 +23,11 @@ Future<void> asyncEditConversation({
     final box = GetStorage();
 
     /// Retrieve the list of conversations from storage
-    List<Map<String, dynamic>> conversationsList =
-        box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ?? <Map<String, dynamic>>[];
+    var conversationsList = box.read('sunday-message-conversations') ?? [];
 
     /// Find the index of the conversation to edit
-    final int conversationIndex = conversationsList.indexWhere(
-      (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID,
+    final conversationIndex = conversationsList.indexWhere(
+      (conv) => conv['uuid'] == conversationUUID,
     );
 
     /// Throw an exception if the conversation is not found

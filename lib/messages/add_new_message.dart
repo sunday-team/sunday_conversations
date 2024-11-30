@@ -38,7 +38,7 @@ Future<void> asyncAddNewMessage({
     );
 
     /// Retrieve existing messages for the conversation
-    List<Map<String, dynamic>> messages = box.read<List<Map<String, dynamic>>>('sunday-message-conversation-$conversationUUID') ?? <Map<String, dynamic>>[];
+    var messages = box.read('sunday-message-conversation-$conversationUUID') ?? [];
 
     var newMessages = messages;
 

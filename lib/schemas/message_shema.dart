@@ -27,10 +27,7 @@ Map<String, dynamic> messageSchema({
   // final String timestamp = DateTime.now().toIso8601String();
   
   return {
-    'content': {
-      'autoMessageId': autoMessageId,
-      'content': content,
-    },
+    'content': content,
     'messageId': const Uuid().v4(),
     'isSender': isSender,
     // 'timestamp': timestamp,

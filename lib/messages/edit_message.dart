@@ -24,15 +24,15 @@ Future<void> asyncEditMessage({
     final box = GetStorage();
 
     // Get the existing messages for the conversation
-    List<Map<String, dynamic>> messages =
-        box.read<List<Map<String, dynamic>>>('sunday-message-conversation-$conversationUUID') ?? <Map<String, dynamic>>[];
+    var messages =
+        box.read('sunday-message-conversation-$conversationUUID') ?? [];
 
-    // Ensure each item in the list is a Map<String, dynamic>
-    messages = List<Map<String, dynamic>>.from(messages);
+    // Convert messages to List to ensure list operations are available
+    messages = (messages as List).toList();
 
     // Find the index of the message to edit
-    final int indexToEdit = messages.indexWhere(
-      (Map<String, dynamic> message) => message['messageId'] == messageId,
+    final indexToEdit = messages.indexWhere(
+      (message) => message['messageId'] == messageId,
     );
 
     if (indexToEdit == -1) {
@@ -40,7 +40,7 @@ Future<void> asyncEditMessage({
     }
 
     // Edit the specified key-value pair in the message
-    messages[indexToEdit]['content']['content'] = value;
+    messages[indexToEdit][key] = value;
 
     // Update the 'updatedAt' timestamp
     messages[indexToEdit]['updatedAt'] = DateTime.now().toString();

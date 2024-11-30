@@ -46,3 +46,13 @@
 ## 0.1.4
 
 * Changed to use more linting.
+
+## 0.1.5
+
+* Added more linting.
+
+* Added more documentation.
+
+* Fixed some bugs.
+
+* And more...
