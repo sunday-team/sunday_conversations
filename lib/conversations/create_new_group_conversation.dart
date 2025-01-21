@@ -1,7 +1,7 @@
 import 'package:sunday_conversations/schemas/conversation_schema.dart';
 import 'package:sunday_conversations/schemas/message_shema_groups.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:uuid/uuid.dart';
 
 /// Creates a new group conversation and stores it in the local storage.
@@ -27,32 +27,26 @@ Future<void> asyncCreateNewGroupConversation({
   required List<Map<String, String>> users,
 }) async {
   try {
-    // Initialize GetStorage
-    final box = GetStorage();
-
-    // Generate a unique identifier for the conversation
+    final prefs = SharedPreferencesListener();
     String conversationUUID = const Uuid().v4();
 
-    // Initialize the conversation with a welcome message
     var messageConv = messageSchemaGroup(
       content: '',
       isSender: false,
       reaction: users
           .map((user) => {
                 'userId': user['userId'],
-                'seen': false, // Default value for seen
-                'distributed': true, // Default value for distributed
+                'seen': false,
+                'distributed': true,
               })
           .toList(),
       autoMessageId: 'automessageid:conversation-start',
       users: users,
     );
 
-    // Get existing conversations list
-    List<Map<String, dynamic>> conversationsList =
-        (box.read<List<dynamic>>('sunday-message-conversations') ?? []).cast<Map<String, dynamic>>();
+    var conversationsList = prefs.read('sunday-message-conversations') ?? [];
+    conversationsList = List<dynamic>.from(conversationsList as List<dynamic>);
 
-    // Define new conversation 
     var conv = conversationSchema(
       name: conversationName,
       description: description,
@@ -63,20 +57,13 @@ Future<void> asyncCreateNewGroupConversation({
       conversationUUID: conversationUUID,
     );
 
-    // Add the new conversation to the list
     conversationsList.add(conv);
 
-    // Write updated conversations list
-    await box.write('sunday-message-conversations', conversationsList);
-
-    // Write the new conversation messages
-    await box.write(
+    await prefs.write('sunday-message-conversations', conversationsList);
+    await prefs.write(
         'sunday-message-conversation-$conversationUUID', messageConv);
   } catch (e) {
-    // Log the error
-    sundayPrint('Error writing to GetStorage: $e');
-
-    // Throw an exception to be handled by the caller
-    throw Exception('Error writing to GetStorage');
+    sundayPrint('Error writing to SharedPreferences: $e');
+    throw Exception('Error writing to SharedPreferences');
   }
 }

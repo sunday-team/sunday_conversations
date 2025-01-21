@@ -1,5 +1,5 @@
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
 
 /// Deletes a conversation from storage based on its UUID.
 ///
@@ -11,19 +11,12 @@ import 'package:sunday_get_storage/sunday_get_storage.dart';
 /// Throws an [Exception] if the conversation is not found or if there's an error during deletion.
 Future<void> asyncDeleteConversation({required String conversationUUID}) async {
   try {
-    // Initialize GetStorage
-    final box = GetStorage();
+    final prefs = SharedPreferencesListener();
 
-    // Get conversations list
-    List<Map<String, dynamic>> conversationsList =
-        box.read<List<Map<String, dynamic>>>('sunday-message-conversations') ?? [];
-
-    // Ensure each item in the list is a Map<String, dynamic>
+    List<Map<String, dynamic>> conversationsList = prefs
+        .read('sunday-message-conversations') as List<Map<String, dynamic>>;
     conversationsList = List<Map<String, dynamic>>.from(conversationsList);
 
-    /// Finds the conversation to delete based on the provided UUID.
-    ///
-    /// Returns null if no matching conversation is found.
     Map<String, dynamic>? conversationToDelete = conversationsList.firstWhere(
       (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID,
       orElse: () => <String, dynamic>{},
@@ -33,15 +26,11 @@ Future<void> asyncDeleteConversation({required String conversationUUID}) async {
       throw Exception('Conversation not found');
     }
 
-    // Remove the conversation from the list
-    conversationsList.removeWhere((Map<String, dynamic> conv) => conv['uuid'] == conversationUUID);
+    conversationsList.removeWhere(
+        (Map<String, dynamic> conv) => conv['uuid'] == conversationUUID);
 
-    // Write updated conversations list
-    await box.write('sunday-message-conversations', conversationsList);
-
-    // Delete the conversation messages
-    String conversationName = conversationToDelete['name'] as String;
-    await box.remove('sunday-message-conversation-$conversationName');
+    await prefs.write('sunday-message-conversations', conversationsList);
+    await prefs.remove('sunday-message-conversation-$conversationUUID');
 
     sundayPrint(
         'Conversation with UUID \'$conversationUUID\' deleted successfully');

@@ -2,8 +2,8 @@
 
 import 'package:sunday_conversations/schemas/conversation_schema.dart';
 import 'package:sunday_conversations/schemas/message_shema.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
 import 'package:uuid/uuid.dart';
 
 /// Creates a new conversation and stores it in local storage.
@@ -17,67 +17,108 @@ import 'package:uuid/uuid.dart';
 /// - [description]: A brief description of the conversation.
 /// - [groupName]: The name of the group (if applicable).
 /// - [firstMessage]: The first message of the conversation.
+/// - [properties]: Optional additional properties to store with the conversation.
 /// Returns:
 /// - [String] The UUID of the created conversation.
 ///
 /// Throws an [Exception] if there's an error writing to GetStorage.
-String asyncCreateNewConversation({
+Future<String> asyncCreateNewConversation({
   required String conversationName,
   required String userId,
   required String description,
   required String groupName,
-  required String firstMessage,
-}) {
-  /// Initialize GetStorage for data persistence
-  GetStorage box = GetStorage();
+  dynamic firstMessage,
+  List<Map<String, dynamic>>? properties,
+}) async {
+  try {
+    final prefs = SharedPreferencesListener();
+    String conversationUUID = const Uuid().v4();
 
-  /// Generate a unique identifier for the new conversation
-  String conversationUUID = const Uuid().v4();
-
-  /// Initialize the conversation with a welcome message
-  var messageConv = [messageSchema(
-      content: firstMessage,
+    var firstMessageObject = messageSchema(
+      content: firstMessage is String ? firstMessage : '',
       autoMessageId: 'automessageid:conversation-start',
       isSender: true,
       reaction: [],
       distributed: true,
-      seen: true)];
+      seen: true,
+    );
 
-  /// Retrieve existing conversations list or initialize an empty list
-  var conversationsList = box.read('sunday-message-conversations') ?? [];
+    var messageConv = [];
 
-  /// Define the new conversation using the conversation schema
-  var conv = conversationSchema(
+    if (firstMessage != null) {
+      messageConv.add(firstMessageObject);
+    }
+
+    var rawList = prefs.read('sunday-message-conversations') ?? [];
+    sundayPrint('Raw conversations list type: ${rawList.runtimeType}');
+    sundayPrint('Raw conversations list content: $rawList');
+
+    List<Map<String, dynamic>> conversationsList;
+    try {
+      conversationsList = List<Map<String, dynamic>>.from(rawList as List);
+    } catch (castError) {
+      sundayPrint('Failed to cast conversations list: ${castError.toString()}');
+      sundayPrint('Raw list content that failed casting: $rawList');
+      rethrow;
+    }
+
+    var conv = conversationSchema(
       name: conversationName,
       description: description,
       userUuid: userId,
       notes: '',
       messagesPerBox: 25,
       isGroup: false,
-      conversationUUID: conversationUUID.toString());
+      conversationUUID: conversationUUID,
+      properties: properties,
+    );
 
-  /// Add the new conversation to the list
-  conversationsList.add(conv);
+    sundayPrint('Generated conversation schema: $conv');
+    sundayPrint('Conversation schema type: ${conv.runtimeType}');
 
-  /// Persist the updated data to storage
-  try {
-    /// Write the updated conversations list
-    box.write('sunday-message-conversations', conversationsList);
+    try {
+      conversationsList.add(conv);
+    } catch (addError) {
+      sundayPrint('Failed to add conversation to list: ${addError.toString()}');
+      sundayPrint('Conversation that failed to add: $conv');
+      sundayPrint('Current conversations list: $conversationsList');
+      rethrow;
+    }
 
-    /// Write the new conversation's initial message
-    box.write(
-        'sunday-message-conversation-$conversationUUID', messageConv);
+    try {
+      await prefs.write('sunday-message-conversations', conversationsList);
+    } catch (writeError) {
+      sundayPrint(
+          'Failed to write conversations list: ${writeError.toString()}');
+      sundayPrint('Data that failed to write: $conversationsList');
+      rethrow;
+    }
+
+    try {
+      await prefs.write(
+          'sunday-message-conversation-$conversationUUID', messageConv);
+    } catch (writeError) {
+      sundayPrint(
+          'Failed to write message conversation: ${writeError.toString()}');
+      sundayPrint('Message conversation that failed to write: $messageConv');
+      rethrow;
+    }
+
+    sundayPrint('Created conversation with UUID: $conversationUUID');
+    sundayPrint('Full conversation details: ${conv.toString()}');
+    return conversationUUID;
   } catch (e) {
-    /// Log the error for debugging purposes
-    sundayPrint('Error writing to GetStorage: $e');
-
-    /// Propagate the error to the caller
-    throw Exception('Error writing to GetStorage');
+    sundayPrint('Error creating conversation: ${e.toString()}');
+    sundayPrint('Error type: ${e.runtimeType}');
+    sundayPrint('Stack trace: ${StackTrace.current}');
+    sundayPrint('Input parameters:');
+    sundayPrint(
+        '  conversationName: $conversationName (${conversationName.runtimeType})');
+    sundayPrint('  userId: $userId (${userId.runtimeType})');
+    sundayPrint('  description: $description (${description.runtimeType})');
+    sundayPrint('  groupName: $groupName (${groupName.runtimeType})');
+    sundayPrint('  firstMessage: $firstMessage (${firstMessage.runtimeType})');
+    sundayPrint('  properties: $properties (${properties?.runtimeType})');
+    throw Exception('Error creating conversation: $e');
   }
-
-  /// Debug statements to verify data persistence
-  sundayPrint(box.read('sunday-message-conversations'));
-  sundayPrint(box.read('sunday-message-conversation-$userId'));
-
-  return conversationUUID;
 }

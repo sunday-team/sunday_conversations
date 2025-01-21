@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
 
 /// Streams messages from a specific conversation.
 ///
@@ -15,31 +15,23 @@ import 'package:sunday_get_storage/sunday_get_storage.dart';
 /// A [Stream<dynamic>] that emits messages from the specified conversation.
 /// If no messages are found or an error occurs, it returns an empty stream.
 Stream<dynamic> asyncStreamConversation(String conversationUUID) {
-  /// Initialize the storage box for accessing conversation data.
-  final box = GetStorage();
-
-  /// Construct the key for accessing the specific conversation's messages.
+  final prefs = SharedPreferencesListener();
   final key = 'sunday-message-conversation-$conversationUUID';
-
-  /// Create and return a stream of messages.
   final controller = StreamController<dynamic>();
 
-  box.listenKey(key, (value) {
+  prefs.listenKey(key, (value) {
     if (value != null) {
-      /// If messages exist, add them to the stream
       if (value is Iterable) {
         for (var message in value) {
           controller.add(message);
         }
       }
     } else {
-      /// Log a message if no messages are found for the conversation.
       sundayPrint('No messages found for conversation: $conversationUUID');
     }
   });
 
   return controller.stream.handleError((Object error) {
-    /// Log any errors that occur during the streaming process.
     sundayPrint('Error streaming conversation: $error');
   });
 }

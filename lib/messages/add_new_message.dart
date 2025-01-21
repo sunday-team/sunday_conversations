@@ -1,4 +1,5 @@
-import 'package:sunday_get_storage/sunday_get_storage.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
+import 'package:sunday_conversations/conversations/edit_conversation.dart';
 import 'package:sunday_conversations/schemas/message_shema.dart';
 import 'package:sunday_core/Print/print.dart';
 
@@ -23,10 +24,8 @@ Future<void> asyncAddNewMessage({
   List<Map<String, String>>? attachments,
 }) async {
   try {
-    /// Initialize GetStorage for data persistence
-    final box = GetStorage();
+    final prefs = SharedPreferencesListener();
 
-    /// Create a new message using the message schema
     var newMessage = messageSchema(
       content: content,
       autoMessageId: 'automessageid:new-message',
@@ -37,23 +36,24 @@ Future<void> asyncAddNewMessage({
       attachments: attachments,
     );
 
-    /// Retrieve existing messages for the conversation
-    var messages = box.read('sunday-message-conversation-$conversationUUID') ?? [];
-
+    var messages =
+        prefs.read('sunday-message-conversation-$conversationUUID') ?? [];
     var newMessages = messages;
-
-    sundayPrint(messages);
-
-    /// Add the new message to the list of messages
     newMessages.add(newMessage);
 
-    /// Persist the updated messages back to storage
-    await box.write('sunday-message-conversation-$conversationUUID', newMessages);
+    await prefs.write(
+        'sunday-message-conversation-$conversationUUID', newMessages);
+    
+    // Update the 'updatedAt' timestamp for the conversation
+    await asyncEditConversation(
+      conversationUUID: conversationUUID,
+      property: 'updatedAt',
+      newValue: DateTime.now().toString(),
+    );
 
-    /// Log the successful addition of the new message
     sundayPrint('New message added to conversation: $conversationUUID');
   } catch (e) {
-    /// Log the error and throw an exception if adding the message fails
     sundayPrint('Error adding new message: $e');
+    throw Exception('Error adding new message');
   }
 }

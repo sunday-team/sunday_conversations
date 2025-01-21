@@ -1,4 +1,5 @@
-import 'package:sunday_get_storage/sunday_get_storage.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
+import 'package:sunday_conversations/conversations/edit_conversation.dart';
 import 'package:sunday_core/Print/print.dart';
 
 /// Edits a specific message in a conversation.
@@ -20,17 +21,12 @@ Future<void> asyncEditMessage({
   required dynamic value,
 }) async {
   try {
-    // Initialize GetStorage
-    final box = GetStorage();
+    final prefs = SharedPreferencesListener();
 
-    // Get the existing messages for the conversation
     var messages =
-        box.read('sunday-message-conversation-$conversationUUID') ?? [];
-
-    // Convert messages to List to ensure list operations are available
+        prefs.read('sunday-message-conversation-$conversationUUID') ?? [];
     messages = (messages as List).toList();
 
-    // Find the index of the message to edit
     final indexToEdit = messages.indexWhere(
       (message) => message['messageId'] == messageId,
     );
@@ -39,20 +35,20 @@ Future<void> asyncEditMessage({
       throw Exception('Message not found');
     }
 
-    // Edit the specified key-value pair in the message
     messages[indexToEdit][key] = value;
-
-    // Update the 'updatedAt' timestamp
     messages[indexToEdit]['updatedAt'] = DateTime.now().toString();
 
-    // Write the updated messages back to storage
-    await box.write('sunday-message-conversation-$conversationUUID', messages);
+    await asyncEditConversation(
+      conversationUUID: conversationUUID,
+      property: 'updatedAt',
+      newValue: DateTime.now().toString(),
+    );
 
-    /// Logs the successful edit operation
+    await prefs.write(
+        'sunday-message-conversation-$conversationUUID', messages);
     sundayPrint(
         'Message with ID \'$messageId\' edited in conversation: $conversationUUID');
   } catch (e) {
-    /// Logs any errors that occur during the edit process
     sundayPrint('Error editing message: $e');
     throw Exception('Error editing message');
   }

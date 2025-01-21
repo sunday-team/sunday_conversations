@@ -1,4 +1,4 @@
-import 'package:sunday_get_storage/sunday_get_storage.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
 
 /// Edits a specific property of a conversation.
@@ -19,36 +19,26 @@ Future<void> asyncEditConversation({
   required dynamic newValue,
 }) async {
   try {
-    /// Initialize GetStorage for data persistence
-    final box = GetStorage();
+    final prefs = SharedPreferencesListener();
+    var conversationsList = prefs.read('sunday-message-conversations') ?? [];
 
-    /// Retrieve the list of conversations from storage
-    var conversationsList = box.read('sunday-message-conversations') ?? [];
-
-    /// Find the index of the conversation to edit
     final conversationIndex = conversationsList.indexWhere(
       (conv) => conv['uuid'] == conversationUUID,
     );
 
-    /// Throw an exception if the conversation is not found
     if (conversationIndex == -1) {
       throw Exception('Conversation not found');
     }
 
-    /// Create or update the specified property with the new value
     conversationsList[conversationIndex][property] = newValue;
+    conversationsList[conversationIndex]['updatedAt'] =
+        DateTime.now().toString();
 
-    /// Update the 'updatedAt' timestamp to reflect the recent change
-    conversationsList[conversationIndex]['updatedAt'] = DateTime.now().toString();
+    await prefs.write('sunday-message-conversations', conversationsList);
 
-    /// Persist the updated conversations list back to storage
-    await box.write('sunday-message-conversations', conversationsList);
-
-    /// Log the successful edit operation
     sundayPrint(
         'Conversation with UUID \'$conversationUUID\' edited successfully');
   } catch (e) {
-    /// Log the error and throw an exception if editing the conversation fails
     sundayPrint('Error editing conversation: $e');
     throw Exception('Error editing conversation');
   }

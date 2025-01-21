@@ -1,5 +1,5 @@
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_core/Print/print.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
 
 /// Deletes a specific message from a conversation.
 ///
@@ -16,20 +16,17 @@ Future<void> asyncDeleteMessage({
   required String messageId,
 }) async {
   try {
-    // Initialize GetStorage
-    final box = GetStorage();
+    final prefs = SharedPreferencesListener();
 
-    /// Retrieves existing messages for the conversation from local storage.
-    /// Returns an empty list if no messages are found.
+    final dynamic rawMessages =
+        prefs.read('sunday-message-conversation-$conversationUUID');
+    if (rawMessages == null) {
+      throw Exception('Conversation not found');
+    }
+
     List<Map<String, dynamic>> messages =
-        box.read<List<Map<String, dynamic>>>('sunday-message-conversation-$conversationUUID') ?? <Map<String, dynamic>>[];
+        List<Map<String, dynamic>>.from(rawMessages as List);
 
-    /// Ensures that each item in the messages list is of type Map<String, dynamic>.
-    /// This step is crucial for type safety and proper data handling.
-    messages = List<Map<String, dynamic>>.from(messages as Iterable);
-
-    /// Finds the index of the message to be deleted.
-    /// Returns -1 if the message is not found.
     final indexToDelete = messages.indexWhere(
       (Map<String, dynamic> message) => message['messageId'] == messageId,
     );
@@ -38,17 +35,13 @@ Future<void> asyncDeleteMessage({
       throw Exception('Message not found');
     }
 
-    /// Removes the message from the list at the found index.
     messages.removeAt(indexToDelete);
+    await prefs.write(
+        'sunday-message-conversation-$conversationUUID', messages);
 
-    /// Writes the updated messages back to local storage.
-    await box.write('sunday-message-conversation-$conversationUUID', messages);
-
-    /// Logs a success message with the deleted message's ID and conversation UUID.
     sundayPrint(
         'Message with ID \'$messageId\' deleted from conversation: $conversationUUID');
   } catch (e) {
-    /// Logs the error and rethrows an exception with a generic error message.
     sundayPrint('Error deleting message: $e');
     throw Exception('Error deleting message');
   }

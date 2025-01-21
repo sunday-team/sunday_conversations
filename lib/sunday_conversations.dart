@@ -3,8 +3,9 @@ library;
 
 import 'dart:async';
 
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_conversations/conversations/create_new_conversation.dart';
-import 'package:sunday_get_storage/sunday_get_storage.dart';
+import 'package:shared_preferences_listener/shared_preferences_listener.dart';
 import 'package:sunday_conversations/conversations/get_conversation.dart';
 import 'package:sunday_core/Print/print.dart';
 import 'conversations/create_new_group_conversation.dart';
@@ -23,9 +24,10 @@ class Calculator {
 
 /// A class to initialize and manage Sunday Conversations
 class SundayConversations {
-  /// Initialize Sunday Conversations
-  void init() {
-    GetStorage.init();
+  final _prefs = SharedPreferencesListener();
+
+  Future<void> init() async {
+    await _prefs.init();
     sundayPrint('Sunday Conversations initialized');
   }
 
@@ -36,14 +38,15 @@ class SundayConversations {
   /// [description] A description of the conversation
   /// [groupName] The name of the group the conversation belongs to
   /// [firstMessage] The first message of the conversation
-  String createNewConversation({
-    required String conversationName,
-    required String userId,
-    required String description,
-    required String groupName,
-    required String firstMessage,
-  }) {
-    return asyncCreateNewConversation(
+  Future<String> createNewConversation(
+      {required String conversationName,
+      required String userId,
+      required String description,
+      required String groupName,
+      dynamic firstMessage,
+      List<Map<String, dynamic>>? properties}) async {
+    return await asyncCreateNewConversation(
+        properties: properties,
         conversationName: conversationName,
         userId: userId,
         description: description,
